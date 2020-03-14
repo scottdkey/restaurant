@@ -1,0 +1,27 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  description: MyText
+  price: 1
+  meal: MyString
+  v: false
+  course: MyString
+  gluten: false
+  veg: false
+  nuts: false
+  dairy: false
+  soy: false
+
+two:
+  name: MyString
+  description: MyText
+  price: 1
+  meal: MyString
+  v: false
+  course: MyString
+  gluten: false
+  veg: false
+  nuts: false
+  dairy: false
+  soy: false
