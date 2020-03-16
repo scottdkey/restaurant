@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import {Container} from 'semantic-ui-react'
+import {Container, Form} from 'semantic-ui-react'
 import axios from "axios"
 import ItemForm from "./components/ItemForm"
 import Item from "./components/Item"
@@ -9,7 +9,14 @@ export default class App extends Component {
   state = {
     items: [],
     loadItemError: false,
-    errorStatusCode: null
+    errorStatusCode: null,
+    mealPicker: null,
+    meals: [
+      { key: "b", text: "Breakfast", value: "breakfast" },
+      { key: "l", text: "Lunch", value: "lunch" },
+      { key: "d", text: "Dinner", value: "dinner" }
+    ],
+    showForm: false
   }
 
   addItem = (item) => {
@@ -72,7 +79,7 @@ export default class App extends Component {
       })
   }
 
-  renderItems() {
+  renderItems(meal) {
     if (this.state.loading){
       return "loading"
     }
@@ -87,10 +94,36 @@ export default class App extends Component {
     }
     return this.state.items.map( item => {
       return (
-        <Item key={`item-${item.id}`}{...item} id={item.id} deleteItem= {this.deleteItem} updateItem={this.updateItem} />
+        <Item 
+        key={`item-${item.id}`}{...item} 
+        id={item.id} 
+        deleteItem={this.deleteItem} 
+        updateItem={this.updateItem} 
+        />
       );
     });
   }
+
+  seperateMeals(){
+    const meal = []
+    if (this.state.mealPicker === 2) {
+      return meal = this.state.items.filter(i => i.meal === "lunch");
+    }
+    if (this.state.mealPicker === 1) {
+      return meal = this.state.items.filter(i => i.meal === "breakfast");
+    }
+    else {
+      return meal = this.state.items.filter(i => i.meal === "dinner");
+    }
+    this.setState({
+      items: meal
+    })
+  }
+
+  updateMeal() {
+
+  }
+
 
   componentDidMount() {
     axios
@@ -106,9 +139,22 @@ export default class App extends Component {
         errorStatusCode: error.toString()
       })
     })
+  }
+  toggleForm = () => {
+    this.setState({
+      showForm: !this.state.showForm
+    });
+  };
+  _handleSelector = e => {
+    let { name, value } = e.target;
+    this.setState({
+      [name] : value
+    })
     
   }
+
   render () {
+    const { showForm } = this.state
   return (
     <Container>
       <div>
@@ -125,7 +171,18 @@ export default class App extends Component {
         SF: Soy Free
       </div>
       <div className="App">
-        <ItemForm addItem={this.addItem} />
+        <Form.Select
+        fluid
+        name='meal'
+        label='Pick Menu'
+        options={this.state.meals}
+        placeholder="Which Menu?"
+        onChange={this.handleSelector}
+        value={this.state.mealPicker}
+        />
+        <div onClick={this.toggleForm}>{showForm ? "hide": "new"}</div>
+        {showForm ? <ItemForm addItem={this.addItem} /> : null}
+
         {this.renderItems()}
       </div>
     </Container>

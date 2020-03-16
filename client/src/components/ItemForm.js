@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import { Form, Button, Checkbox} from 'semantic-ui-react'
 
 export default class ItemForm extends Component {
@@ -13,14 +13,19 @@ export default class ItemForm extends Component {
     veg: this.props.veg === undefined ? false : this.props.veg,
     nuts: this.props.nuts === undefined ? false : this.props.nuts,
     dairy: this.props.dairy === undefined ? false : this.props.dairy,
-    soy: this.props.soy === undefined ? false : this.props.soy
+    soy: this.props.soy === undefined ? false : this.props.soy,
+    meals: [
+      { key: "b", text: "Breakfast", value: "breakfast" },
+      { key: "l", text: "Lunch", value: "lunch" },
+      { key: "d", text: "Dinner", value: "dinner" }
+    ]
   }
   clearForm() {
     this.setState({
       name: "",
       description: "",
       price: null,
-      meal: "",
+      meal: 'select',
       course: "",
       gluten: false,
       v: false,
@@ -54,14 +59,15 @@ export default class ItemForm extends Component {
       [e.target.id] : e.target.checked
     })
   }
+  handleSelector = e => {
+    this.setState({
+      [e.target.name] : e.target.options
+    })
+  }
 
 
   render() {
-    const meals = [
-      { key: "b", text: "Breakfast", value: "breakfast" },
-      { key: "l", text: "Lunch", value: "lunch" },
-      { key: "d", text: "Dinner", value: "dinner" }
-    ];
+    const { meals } = this.state
     return (
       <Form onSubmit={this.handleSubmit}>
         <Form.Input
@@ -93,9 +99,9 @@ export default class ItemForm extends Component {
           label="Meal"
           name="meal"
           options={meals}
-          placeholder="Meal"
-          onChange={this.handleDropDown}
-          value={this.state.meal}
+          placeholder="Which menu?"
+          onChange={this.handleSelector}
+          value={meals.value}
         />
         <Checkbox
           onClick={this.flipBoolean}
