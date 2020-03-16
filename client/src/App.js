@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import {Container} from 'semantic-ui-react'
 import axios from "axios"
 import ItemForm from "./components/ItemForm"
-import Item from "./components/Todo"
+import Item from "./components/Item"
 
 export default class App extends Component {
   state = {
@@ -38,7 +37,8 @@ export default class App extends Component {
   }
 
   updateItem = (itemForm, id) => {
-    axios.put(`/api/items/${id}`, {
+    axios
+    .put(`/api/items/${id}`, {
       name: itemForm.name,
       description: itemForm.description,
       price: itemForm.price,
@@ -51,10 +51,10 @@ export default class App extends Component {
       soy: itemForm.soy,
       gluten: itemForm.gluten
     }).then(res => {
-      const newArray = this.state.items.map( itemUpdate =>{
-        if(itemUpdate.id != id){
-          return itemUpdate
-        } return {...itemUpdate, ...itemForm};
+      const newArray = this.state.items.map( update =>{
+        if(update.id != id){
+          return update
+        } return {...update, ...itemForm};
       })
     this.setState({
       items: newArray
@@ -65,7 +65,11 @@ export default class App extends Component {
   }
 
   deleteItem = (id) => {
-    //remove something from api
+    axios.delete(`/api/items/${id}`)
+      .then (res => {
+        const { items } = this.state;
+        this.setState({ items: items.filter(i => i.id !== id )})
+      })
   }
 
   renderItems() {
@@ -76,13 +80,14 @@ export default class App extends Component {
       return (
         <>
         <h2 style={{color: 'red' }}>error</h2>
-        <h3>status Code: {this.state.errorStatusCode}</h3>
+        <h3>{this.state.errorStatusCode}</h3>
+        <p> {this.state.toString()}</p>
         </>
       )
     }
     return this.state.items.map( item => {
       return (
-        <Item key={`item-${item.id}`}{...item} updateItem={this.updateItem} />
+        <Item key={`item-${item.id}`}{...item} id={item.id} deleteItem= {this.deleteItem} updateItem={this.updateItem} />
       );
     });
   }
@@ -101,10 +106,24 @@ export default class App extends Component {
         errorStatusCode: error.toString()
       })
     })
+    
   }
   render () {
   return (
-    <Container >
+    <Container>
+      <div>
+        Allergys Info:
+        <br />
+        GF: Gluten Free
+        <br />
+        V: Vegan
+        <br />
+        VEG: Vegetarian
+        <br />
+        NF: Nut Free <br />
+        DF: Dairy Free <br />
+        SF: Soy Free
+      </div>
       <div className="App">
         <ItemForm addItem={this.addItem} />
         {this.renderItems()}

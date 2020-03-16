@@ -1,6 +1,6 @@
 class Api::ItemsController < ApplicationController
   def index
-    redner json: Item.all
+    render json: Item.all
   end
 
   def create
